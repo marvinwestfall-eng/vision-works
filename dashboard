@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Works SA · Mr Matthew Kgathe</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dk:#141414;--dk2:#1e1e1e;--dk3:#272727;
+  --cream:#F2EFE9;--white:#ffffff;
+  --gold:#C4912A;--gold-lt:#FBF3E3;--gold-bd:#E8C87A;
+  --green:#155F3A;--green-lt:#EBF7F0;
+  --amber:#7A3300;--amber-lt:#FEF3EA;
+  --blue:#1A5CDB;--blue-lt:#EEF3FF;
+  --text:#111;--muted:#666;--bd:#D8D4CC;--r:10px;
+}
+body{font-family:'Poppins',sans-serif;background:var(--cream);color:var(--text);font-size:14px;line-height:1.6}
+
+.topbar{background:var(--dk);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.brand{display:flex;align-items:center;gap:13px}
+.eye{width:38px;height:38px;border-radius:9px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{color:#fff;font-size:15px;font-weight:700;line-height:1.2}
+.brand-sub{color:rgba(255,255,255,.38);font-size:11px}
+.period{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:5px 15px;font-size:11px;font-weight:500;color:rgba(255,255,255,.45)}
+.period strong{color:#fff}
+
+.sub-tabs{background:var(--dk2);padding:0 32px;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.06)}
+.st{padding:12px 18px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;color:rgba(255,255,255,.35);cursor:pointer;white-space:nowrap;transition:color .15s}
+.st:hover{color:rgba(255,255,255,.65)}
+.st.on{color:rgba(255,255,255,.9);border-bottom-color:var(--gold-bd);font-weight:600}
+
+.body{padding:32px 32px 56px;max-width:1100px}
+.panel{display:none}.panel.on{display:block}
+
+/* ── OVERVIEW ── */
+.ov-header{margin-bottom:20px}
+.ov-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px}
+.loc-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+
+.loc-block{border-radius:12px;overflow:hidden}
+.lb-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.lb-name{font-size:15px;font-weight:800;color:#fff}
+.lb-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.8px}
+.lb-kpis{background:var(--dk);padding:18px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lb-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);margin-bottom:5px}
+.lb-kpi-val{font-size:28px;font-weight:800;color:#fff;line-height:1}
+.lb-kpi-val.gold{color:var(--gold)}
+.lb-kpi-note{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px}
+
+.insights-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.ins{border-radius:var(--r);padding:18px 20px}
+.ins.good{background:var(--green-lt);border:1px solid #A8D8BC}
+.ins.watch{background:var(--amber-lt);border:1px solid #EDCBA5}
+.ins-head{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.ins-head.good{color:var(--green)}.ins-head.watch{color:var(--amber)}
+.ins-loc{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:.6;margin-bottom:6px}
+.ins-item{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05);line-height:1.5;display:flex;align-items:baseline;gap:6px}
+.ins-item:last-child{border-bottom:none;padding-bottom:0}
+.ins-item em{font-style:normal;font-weight:700}
+
+/* ── PAID VS ORGANIC ── */
+.pvo-card{background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+.pvo-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.pvo-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.bar-row{margin-bottom:16px}
+.bar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.bar-lbl{font-size:13px;font-weight:700}
+.bar-val{font-size:20px;font-weight:800}
+.track{height:16px;background:#EEE8E0;border-radius:8px;overflow:hidden}
+.fill{height:100%;border-radius:8px;transition:width 1.2s ease}
+.bar-cap{font-size:11px;color:var(--muted);margin-top:4px}
+.callout{background:var(--cream);border:1px solid var(--bd);border-radius:8px;padding:13px 16px;font-size:13px;line-height:1.7;margin-top:16px}
+
+.stat-band{background:var(--gold-lt);border:1px solid var(--gold-bd);border-radius:10px;padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 0}
+.sl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:3px}
+.sv{font-size:20px;font-weight:800}
+.sn{font-size:11px;color:var(--muted)}
+
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.why{background:var(--blue-lt);border-radius:9px;padding:15px 17px}
+.why-t{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:5px}
+.why-p{font-size:11px;color:var(--muted);line-height:1.6}
+
+/* ── INVESTMENT CASE ── */
+.hero-strip{background:var(--dk);border-radius:12px;padding:26px 28px;margin-bottom:18px}
+.hs-pre{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-bd);margin-bottom:7px}
+.hs-h{font-size:19px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.3}
+.hs-p{font-size:12px;color:rgba(255,255,255,.5);max-width:600px;line-height:1.75;margin-bottom:20px}
+.hs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.hs-sl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.35);margin-bottom:3px}
+.hs-sv{font-size:22px;font-weight:800}
+.hs-sn{font-size:10px;color:rgba(255,255,255,.35)}
+
+.ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.ben{background:var(--white);border:1px solid var(--bd);border-top:3px solid var(--gold);border-radius:var(--r);padding:17px 19px}
+.ben-icon{font-size:19px;margin-bottom:8px}
+.ben-t{font-size:13px;font-weight:700;margin-bottom:4px}
+.ben-p{font-size:11px;color:var(--muted);line-height:1.6}
+
+.vs-wrap{background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:20px 22px;margin-bottom:18px}
+.vs-sub{font-size:12px;color:var(--muted);margin-top:2px;margin-bottom:14px}
+.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vs-col{border-radius:9px;padding:16px 18px}
+.vs-h{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.vs-item{font-size:12px;margin-bottom:8px;line-height:1.4}
+
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px}
+.sn-num{width:26px;height:26px;background:var(--dk);color:#fff;font-size:11px;font-weight:800;border-radius:5px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.step-t{font-size:13px;font-weight:700;margin-bottom:5px}
+.step-p{font-size:11px;color:var(--muted);line-height:1.6}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;margin-top:8px}
+.tag.b{background:var(--blue-lt);color:var(--blue)}
+.tag.g{background:var(--gold-lt);color:var(--gold)}
+.tag.gr{background:var(--green-lt);color:var(--green)}
+
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin:24px 0 12px}
+
+.ch-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.ch-card{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px}
+.ch-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:12px}
+.ch-wrap{position:relative;height:190px}
+
+footer{background:var(--dk);color:rgba(255,255,255,.3);font-size:11px;padding:15px 32px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+footer strong{color:rgba(255,255,255,.6)}
+
+@media(max-width:820px){
+  .loc-compare,.insights-row,.ben-grid,.vs-grid,.hs-stats,.why-grid,.steps-grid,.ch-pair{grid-template-columns:1fr}
+  .lb-kpis{grid-template-columns:1fr 1fr}
+  .stat-band{grid-template-columns:1fr 1fr}
+  .body,.topbar,.sub-tabs{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="eye">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <div>
+      <div class="brand-name">Vision Works SA</div>
+      <div class="brand-sub">Social Media Performance Report</div>
+    </div>
+  </div>
+  <div class="period">PERIOD <strong>Feb – Apr 2026</strong> &nbsp;·&nbsp; Mr Matthew Kgathe</div>
+</header>
+
+<nav class="sub-tabs">
+  <button class="st on" onclick="go('overview',this)">Overview</button>
+  <button class="st"    onclick="go('paid',this)">Paid vs Organic</button>
+  <button class="st"    onclick="go('case',this)">The Investment Case</button>
+</nav>
+
+<div class="body">
+
+<!-- ════════════════════════════════════
+     OVERVIEW
+════════════════════════════════════ -->
+<div id="p-overview" class="panel on">
+
+  <div class="ov-header">
+    <div class="ov-title">Both locations · February to April 2026</div>
+  </div>
+
+  <div class="loc-compare">
+    <!-- DAINFERN -->
+    <div class="loc-block">
+      <div class="lb-head" style="background:#1a1a1a">
+        <div class="lb-name">Dainfern</div>
+        <div class="lb-badge" style="background:rgba(21,101,59,.35);color:#6DCFA0;border:1px solid #6DCFA0">Active · Paid Live</div>
+      </div>
+      <div class="lb-kpis">
+        <div>
+          <div class="lb-kpi-lbl">People Reached</div>
+          <div class="lb-kpi-val gold">662.6K</div>
+          <div class="lb-kpi-note">organic + paid · 3 months</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">Followers</div>
+          <div class="lb-kpi-val">3,229</div>
+          <div class="lb-kpi-note">Facebook · Instagram · TikTok</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">Engagements</div>
+          <div class="lb-kpi-val">706</div>
+          <div class="lb-kpi-note">interactions + paid clicks</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">Posts Published</div>
+          <div class="lb-kpi-val">80</div>
+          <div class="lb-kpi-note">across all platforms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSHROOM FARM -->
+    <div class="loc-block">
+      <div class="lb-head" style="background:#2a2010">
+        <div class="lb-name">Mushroom Farm</div>
+        <div class="lb-badge" style="background:rgba(196,145,42,.2);color:var(--gold-bd);border:1px solid var(--gold-bd)">Shows Promise</div>
+      </div>
+      <div class="lb-kpis">
+        <div>
+          <div class="lb-kpi-lbl">People Reached</div>
+          <div class="lb-kpi-val gold">588</div>
+          <div class="lb-kpi-note">organic only · no paid campaigns</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">Google Actions</div>
+          <div class="lb-kpi-val">166</div>
+          <div class="lb-kpi-note">calls · directions · visits</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">GBP Actions (Apr)</div>
+          <div class="lb-kpi-val">66</div>
+          <div class="lb-kpi-note">growing every month</div>
+        </div>
+        <div>
+          <div class="lb-kpi-lbl">Paid Campaigns</div>
+          <div class="lb-kpi-val">0</div>
+          <div class="lb-kpi-note">ready to activate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insights-row">
+    <div class="ins good">
+      <div class="ins-head good">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        What's going well
+      </div>
+      <div class="ins-loc">Dainfern</div>
+      <div class="ins-item">Instagram leads all platforms — <em>297,340 impressions</em></div>
+      <div class="ins-item">Paid campaign reached <em>134,250 people</em> for R745 in April</div>
+      <div class="ins-item">Google Business up to <em>1,540 impressions</em> in April</div>
+      <div style="height:10px"></div>
+      <div class="ins-loc">Mushroom Farm</div>
+      <div class="ins-item"><em>17 phone calls</em> from Google in March — real local demand</div>
+      <div class="ins-item"><em>32 direction requests</em> — people finding the store already</div>
+      <div class="ins-item">GBP actions growing every month — <em>35 → 55 → 66</em></div>
+    </div>
+    <div class="ins watch">
+      <div class="ins-head watch">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Areas to watch
+      </div>
+      <div class="ins-loc">Dainfern</div>
+      <div class="ins-item"><em>Posts dropped</em> from 35 in Feb to 18 in April</div>
+      <div class="ins-item">TikTok has <em>35 followers</em> but minimal reach — untapped</div>
+      <div style="height:10px"></div>
+      <div class="ins-loc">Mushroom Farm</div>
+      <div class="ins-item">Social media presence is <em>ready to be built</em> — audience of 3</div>
+      <div class="ins-item">No paid campaigns yet — <em>first campaign</em> would change everything</div>
+      <div class="ins-item">Zero posts in April — <em>consistency</em> will compound GBP growth</div>
+    </div>
+  </div>
+
+  <!-- PLATFORM SNAPSHOT -->
+  <div class="sec-lbl">Platform snapshot · Dainfern · 3-month totals</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+    <div style="background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:10px;font-weight:700;color:#1877F2;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Facebook</div>
+      <div style="font-size:22px;font-weight:800">225,890</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">864 followers · 29 posts</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:10px;font-weight:700;color:#E1306C;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Instagram</div>
+      <div style="font-size:22px;font-weight:800">297,340</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">2,330 followers · 28 posts</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:10px;font-weight:700;color:#111;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">TikTok</div>
+      <div style="font-size:22px;font-weight:800">1,070</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">35 followers · 10 posts</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gold-bd);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:10px;font-weight:700;color:#4285F4;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Google Business</div>
+      <div style="font-size:22px;font-weight:800">4,099</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">424 actions · 13 posts</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════
+     PAID VS ORGANIC
+════════════════════════════════════ -->
+<div id="p-paid" class="panel">
+
+  <div class="pvo-card">
+    <div class="pvo-title">Dainfern with paid support vs Mushroom Farm without</div>
+    <div class="pvo-sub">Three months · Feb – Apr 2026 · This gap is what Vision Works group membership closes</div>
+
+    <div class="bar-row">
+      <div class="bar-top">
+        <span class="bar-lbl" style="color:#C4912A">Dainfern — with paid campaigns</span>
+        <span class="bar-val" style="color:#C4912A">662,649</span>
+      </div>
+      <div class="track"><div class="fill" id="bD" style="width:0%;background:#C4912A"></div></div>
+      <div class="bar-cap">528,399 organic + 134,250 paid in April · 80 posts · R745 ad spend</div>
+    </div>
+
+    <div class="bar-row">
+      <div class="bar-top">
+        <span class="bar-lbl" style="color:var(--green)">Mushroom Farm — organic only, no paid</span>
+        <span class="bar-val">588</span>
+      </div>
+      <div class="track"><div class="fill" id="bM" style="width:0%;background:var(--green)"></div></div>
+      <div class="bar-cap">31 posts · R0 ad spend · all three months combined</div>
+    </div>
+
+    <div class="callout">
+      Dainfern reached <strong>662,649 people</strong> in three months. Mushroom Farm reached <strong>588</strong>. The difference is not the location — it is the Vision Works infrastructure and a <strong>R745 monthly ad budget</strong> working behind Dainfern. Mushroom Farm has the same potential. It just needs the same support.
+    </div>
+
+    <div class="stat-band">
+      <div><div class="sl">Dainfern paid — April</div><div class="sv">134,250</div><div class="sn">impressions · one campaign</div></div>
+      <div><div class="sl">People who clicked</div><div class="sv">168</div><div class="sn">visited the page</div></div>
+      <div><div class="sl">Cost per click</div><div class="sv">R4.44</div><div class="sn">Dainfern campaign</div></div>
+      <div><div class="sl">MF organic — 3 months</div><div class="sv">588</div><div class="sn">no paid campaigns at all</div></div>
+    </div>
+
+    <div class="why-grid">
+      <div class="why">
+        <div class="why-t">Paid reaches people who don't know you yet</div>
+        <div class="why-p">Organic posts reach existing followers. Paid ads reach the area around your practice — people who have never heard of Vision Works.</div>
+      </div>
+      <div class="why">
+        <div class="why-t">You choose exactly who sees it</div>
+        <div class="why-p">Target by neighbourhood and interest. Every rand goes to the people most likely to book an eye test.</div>
+      </div>
+      <div class="why">
+        <div class="why-t">Every rand is tracked</div>
+        <div class="why-p">R4.44 per click at Dainfern. You know what each visitor costs. With organic posts, you can never measure what turned into a booking.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch-pair">
+    <div class="ch-card">
+      <div class="ch-lbl">Total reach — 3 months</div>
+      <div class="ch-wrap"><canvas id="cImp" role="img" aria-label="Dainfern 662649 vs Mushroom Farm 588 total reach">Dainfern 662649 vs Mushroom Farm 588.</canvas></div>
+    </div>
+    <div class="ch-card">
+      <div class="ch-lbl">Mushroom Farm — GBP actions growing monthly</div>
+      <div class="ch-wrap"><canvas id="cGbp" role="img" aria-label="GBP actions Feb 35 Mar 55 Apr 66">Feb 35, Mar 55, Apr 66.</canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════
+     INVESTMENT CASE
+════════════════════════════════════ -->
+<div id="p-case" class="panel">
+
+  <div class="hero-strip">
+    <div class="hs-pre">The opportunity in front of you</div>
+    <h2 class="hs-h">Mushroom Farm has the demand.<br>Vision Works provides what turns it into a practice.</h2>
+    <p class="hs-p">Dainfern reached 662,000 people in three months with Vision Works, Six6 Marketing, and a modest ad budget behind it. Mushroom Farm is already generating phone calls and direction requests from Google — with none of that support. The gap between 662K and 588 is not location. It is infrastructure.</p>
+    <div class="hs-stats">
+      <div>
+        <div class="hs-sl">Dainfern monthly avg reach</div>
+        <div class="hs-sv" style="color:#6EB0FF">220,883</div>
+        <div class="hs-sn">with Vision Works + paid support</div>
+      </div>
+      <div>
+        <div class="hs-sl">Mushroom Farm monthly avg reach</div>
+        <div class="hs-sv" style="color:var(--gold-bd)">196</div>
+        <div class="hs-sn">organic only · no paid campaigns</div>
+      </div>
+      <div>
+        <div class="hs-sl">The gap Vision Works closes</div>
+        <div class="hs-sv" style="color:#6DCFA0">1,126×</div>
+        <div class="hs-sn">this is what belonging delivers</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">What Vision Works group membership gives you</div>
+  <div class="ben-grid">
+    <div class="ben">
+      <div class="ben-icon">🏆</div>
+      <div class="ben-t">Instant brand trust</div>
+      <div class="ben-p">Vision Works is already recognised across Johannesburg. Mushroom Farm gets that credibility from day one — no years of brand-building required.</div>
+    </div>
+    <div class="ben">
+      <div class="ben-icon">📢</div>
+      <div class="ben-t">Marketing handled for you</div>
+      <div class="ben-p">Six6 Marketing manages content, paid campaigns, and monthly reporting. You focus on patients, not platforms.</div>
+    </div>
+    <div class="ben">
+      <div class="ben-icon">💰</div>
+      <div class="ben-t">Paid ads at group rates</div>
+      <div class="ben-p">R4.44 per click at Dainfern is a result of group-level campaign management. Independent practices pay significantly more for the same reach.</div>
+    </div>
+    <div class="ben">
+      <div class="ben-icon">📊</div>
+      <div class="ben-t">Monthly reports delivered</div>
+      <div class="ben-p">A clear picture of both locations every month — plain language, real numbers, specific next steps.</div>
+    </div>
+    <div class="ben">
+      <div class="ben-icon">🤝</div>
+      <div class="ben-t">Partner network access</div>
+      <div class="ben-p">Nedbank Avo, Netcare Plus, Dis-Chem — audiences and partnerships an independent practice cannot access alone.</div>
+    </div>
+    <div class="ben">
+      <div class="ben-icon">📍</div>
+      <div class="ben-t">Two locations, one system</div>
+      <div class="ben-p">Dainfern and Mushroom Farm on the same reporting, the same strategy, and the same infrastructure — managed as one.</div>
+    </div>
+  </div>
+
+  <div class="vs-wrap">
+    <div style="font-size:15px;font-weight:700">Buying Mushroom Farm independently vs as a Vision Works member</div>
+    <div class="vs-sub">Same location. Different trajectory.</div>
+    <div class="vs-grid">
+      <div class="vs-col" style="background:#F5F3EE;border:1px solid var(--bd)">
+        <div class="vs-h" style="color:var(--muted)">On your own</div>
+        <div class="vs-item">❌ Build brand recognition from zero</div>
+        <div class="vs-item">❌ Hire and manage marketing yourself</div>
+        <div class="vs-item">❌ Pay full rates for paid campaigns</div>
+        <div class="vs-item">❌ No access to partner ecosystem</div>
+        <div class="vs-item">❌ No monthly reporting</div>
+        <div class="vs-item">❌ Start from 196 impressions per month</div>
+      </div>
+      <div class="vs-col" style="background:var(--dk)">
+        <div class="vs-h" style="color:#6EB0FF">As a Vision Works group member</div>
+        <div class="vs-item" style="color:#fff">✅ Recognised name from day one</div>
+        <div class="vs-item" style="color:#fff">✅ Six6 Marketing handles everything</div>
+        <div class="vs-item" style="color:#fff">✅ Group rates — R4.44 per click</div>
+        <div class="vs-item" style="color:#fff">✅ Nedbank Avo · Netcare Plus and more</div>
+        <div class="vs-item" style="color:#fff">✅ Monthly reports delivered to you</div>
+        <div class="vs-item" style="color:#fff">✅ Path to 220,000+ impressions per month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">First three steps once you acquire Mushroom Farm</div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="sn-num">1</div>
+      <div class="step-t">Launch a paid campaign</div>
+      <div class="step-p">People already call and get directions from Google. A campaign mirroring Dainfern's could reach 130,000+ people for under R750 in month one.</div>
+      <div class="tag g">Ad budget: R750 to start</div>
+    </div>
+    <div class="step">
+      <div class="sn-num">2</div>
+      <div class="step-t">Build a posting schedule</div>
+      <div class="step-p">Six6 Marketing activates immediately — 20+ posts per month, on-brand and managed, as part of your group membership.</div>
+      <div class="tag b">Target: 20+ posts per month</div>
+    </div>
+    <div class="step">
+      <div class="sn-num">3</div>
+      <div class="step-t">Grow Google Business</div>
+      <div class="step-p">GBP actions grew from 35 to 66 in three months with minimal input. Regular posts and photos will compound this at no extra cost.</div>
+      <div class="tag gr">Already working · needs consistency</div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /.body -->
+
+<footer>
+  <div><strong>Vision Works SA</strong> · Marketing Report · Mr Matthew Kgathe · Feb–Apr 2026</div>
+  <div>Prepared by <strong>Six6 Marketing</strong></div>
+</footer>
+
+<script>
+let built=false;
+function go(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.st').forEach(t=>t.classList.remove('on'));
+  document.getElementById('p-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name==='paid'&&!built){ buildPaid(); built=true; }
+}
+
+function buildPaid(){
+  anim('bD','100%'); anim('bM','0.089%');
+  mk('cImp',['Dainfern (with paid)','Mushroom Farm (organic)'], [662649,588],['#C4912A','#155F3A'],v=>v>=1000?(v/1000).toFixed(0)+'K':v);
+  mk('cGbp',['February','March','April'], [35,55,66],['#C4912A','#C4912A','#C4912A'],null);
+}
+function anim(id,w){
+  const el=document.getElementById(id); if(!el)return;
+  el.style.transition='none'; el.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.transition='width 1.2s ease';el.style.width=w;}));
+}
+function mk(id,labels,data,colors,yFmt){
+  const el=document.getElementById(id); if(!el)return;
+  new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:7,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:11},color:'#888'}},y:{grid:{color:'#EEE8E0'},ticks:{font:{family:'Poppins',size:11},color:'#888',callback:yFmt||(v=>v)}}}}});
+}
+</script>
+</body>
+</html>
